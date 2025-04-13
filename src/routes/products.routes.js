@@ -1,8 +1,6 @@
 import express from "express";
 import {
   createProduct,
-  getAllProducts,
-  getSingleProduct,
   getUserProducts,
 } from "../controllers/products.controller.js";
 import { verifyAccount } from "../middlewares/verifyAccount.js";
@@ -10,9 +8,7 @@ import { productValidation } from "../middlewares/productValidation.js";
 
 const router = express.Router();
 
-router.get("/", verifyAccount, getAllProducts);
-
-router.get("/:id", verifyAccount, getSingleProduct);
+// SE MOVIERON LAS RUTAS QUE REFIEREN A RECUPERACION DE DATOS EN UN CONTEXTO GLOBAL PARA EVITAR FALLAS A LA HORA DE MANEJAR LOS ERRORES
 
 router.get("/user", verifyAccount, getUserProducts);
 

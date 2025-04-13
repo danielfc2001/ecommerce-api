@@ -4,16 +4,19 @@ import authModel from "../schemas/authModel.js";
 export const verifyAccount = async (req, res, next) => {
   const token = req.headers["x-access-token"];
 
-  if (!token) {
-    console.log("Token no encontrado.");
-    throw {
-      errorStatus: 403,
-      message: "Token no encontrado.",
-    };
-  }
-
   try {
+    if (!token)
+      throw {
+        errorStatus: 403,
+        message: "Token no encontrado.",
+      };
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded)
+      throw {
+        errorStatus: 403,
+        message: "A ocurrido un error al verificar el usuario.",
+      };
     const user = await authModel.findById(decoded.id);
     if (!user)
       throw {
@@ -24,11 +27,13 @@ export const verifyAccount = async (req, res, next) => {
       ...req.body,
       id: user._id,
     };
+    req.user = {
+      id: user._id,
+    };
     console.log("user validation passed");
     next();
   } catch (error) {
-    return res
-      .status(error.errorStatus || 500)
-      .json({ message: error.message });
+    console.log(error);
+    res.status(error.errorStatus || 500).json({ message: error.message });
   }
 };

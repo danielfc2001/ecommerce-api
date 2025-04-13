@@ -16,20 +16,29 @@ export const getAllProducts = async (req, res) => {
 };
 
 export const getUserProducts = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.user;
+  console.log(req.user);
   try {
-    const matches = await productModel.find({ createdBy: id });
-    if (!matches)
+    if (!id)
       throw {
         errorStatus: 500,
         message: "A ocurrido un error al recuperar los productos del usuario.",
       };
+    const matches = await productModel.find({ createdBy: id });
+    if (!matches)
+      throw {
+        errorStatus: 404,
+        message: "A ocurrido un error al recuperar los productos del usuario.",
+      };
+    console.log(matches);
     res.status(200).json({
       products: matches,
     });
   } catch (error) {
     console.log(error);
-    res.status(error.errorStatus || 500).json({ message: error.message });
+    res
+      .status(error?.errorStatus || 500)
+      .json({ message: error.message || "Error interno del servidor." });
   }
 };
 
