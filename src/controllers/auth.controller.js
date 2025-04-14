@@ -80,7 +80,7 @@ export const verifyUser = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  const { username, email, password, captcha } = req.body;
+  const { username, email, password, brand, captcha } = req.body;
   console.log(req.body);
 
   if (!username || !email || !password) {
@@ -112,6 +112,18 @@ export const createUser = async (req, res) => {
         errorStatus: 400,
         message: "A ocurrido un error al crear el nuevo usuario.",
       };
+
+    if (brand) {
+      const brandMatch = await authModel.findOne({ brand });
+
+      if (brandMatch)
+        throw {
+          errorStatus: 400,
+          message:
+            "El nombre de su marca debe ser unico, en estos momentos otro cliente esta ocupando ese nombre.",
+        };
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (!hashedPassword)
@@ -120,7 +132,12 @@ export const createUser = async (req, res) => {
         message: "A ocurrido un error al crear el nuevo usuario.",
       };
 
-    const user = new authModel({ username, email, password: hashedPassword });
+    const user = new authModel({
+      username,
+      email,
+      password: hashedPassword,
+      brand,
+    });
 
     const newUser = await user.save();
     if (!newUser)
