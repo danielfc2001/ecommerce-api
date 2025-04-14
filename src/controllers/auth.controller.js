@@ -147,6 +147,8 @@ export const createUser = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    return res.status(error.errorStatus).json({ message: error.message });
+    return res
+      .status(error.errorStatus || 500)
+      .json({ message: error.message });
   }
 };
