@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authModel from "../schemas/authModel.js";
+import { verifyCaptcha } from "../libs/verifyCaptcha.js";
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -79,7 +80,7 @@ export const verifyUser = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, captcha } = req.body;
   console.log(req.body);
 
   if (!username || !email || !password) {
@@ -89,6 +90,13 @@ export const createUser = async (req, res) => {
   }
 
   try {
+    const isValidCaptcha = await verifyCaptcha(captcha);
+
+    if (!isValidCaptcha)
+      throw {
+        errorStatus: 400,
+        message: "A ocurrido un error al intentar validar el CAPTCHA.",
+      };
     const emailMatch = await authModel.findOne({ email });
 
     if (emailMatch)
