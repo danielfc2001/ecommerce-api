@@ -72,7 +72,7 @@ export const verifyUser = async (req, res) => {
       };
     return res.status(200).json({
       message: "Usuario autenticado con exito.",
-      user: { email: user.email, id: user._id },
+      user: { email: user.email, id: user._id, brand: user.brand },
     });
   } catch (error) {
     return res.status(401).json({ message: "No autorizado." });

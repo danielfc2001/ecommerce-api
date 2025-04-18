@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createProduct,
+  deleteProduct,
   getUserProducts,
 } from "../controllers/products.controller.js";
 import { verifyAccount } from "../middlewares/verifyAccount.js";
@@ -13,5 +14,7 @@ const router = express.Router();
 router.get("/user", verifyAccount, getUserProducts);
 
 router.post("/create", productValidation, verifyAccount, createProduct);
+
+router.delete("/delete/:id", verifyAccount, deleteProduct);
 
 export default router;

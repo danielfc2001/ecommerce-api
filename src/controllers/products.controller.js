@@ -1,3 +1,4 @@
+import { cloudImgRemove } from "../libs/cloudImgRemove.js";
 import { cloudImgUpload } from "../libs/cloudImgUpload.js";
 import productModel from "../schemas/productModel.js";
 
@@ -30,7 +31,6 @@ export const getUserProducts = async (req, res) => {
         errorStatus: 404,
         message: "A ocurrido un error al recuperar los productos del usuario.",
       };
-    console.log(matches);
     res.status(200).json({
       products: matches,
     });
@@ -77,6 +77,8 @@ export const createProduct = async (req, res) => {
       };
     const uploadImgResult = await cloudImgUpload(product.image);
 
+    console.log(uploadImgResult);
+
     if (!uploadImgResult)
       throw {
         errorStatus: 500,
@@ -86,6 +88,7 @@ export const createProduct = async (req, res) => {
       name: product.name,
       description: product.description,
       image: uploadImgResult.url,
+      imageId: uploadImgResult.public_id,
       price: parseFloat(product.price),
       currency: product.currency,
       alterCurrency:
@@ -110,5 +113,39 @@ export const createProduct = async (req, res) => {
       .json({ message: "El producto a sido creado satisfactoriamente." });
   } catch (err) {
     res.status(err.errorStatus || 500).json({ message: err.message });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const match = await productModel.findById(id);
+    if (!match)
+      throw {
+        errorStatus: 404,
+        message: "No se encontraron productos.",
+      };
+
+    if (!match.imageId)
+      throw {
+        errorStatus: 500,
+        message: "A ocurrido un error al recuperar la imagen.",
+      };
+    const deletedImg = await cloudImgRemove(match.imageId);
+    if (!deletedImg) {
+      throw {
+        errorStatus: 500,
+        message: "A ocurrido un error al eliminar la imagen.",
+      };
+    }
+    const product = await productModel.findByIdAndDelete(id);
+    if (!product)
+      throw {
+        errorStatus: 404,
+        message: "No se encontraron productos.",
+      };
+    res.status(200).json({ message: "El producto a sido eliminado." });
+  } catch (error) {
+    res.status(error.errorStatus || 500).json({ message: error.message });
   }
 };
