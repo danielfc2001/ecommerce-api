@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: ["https://commerce-ahb.pages.dev", "http://localhost:5173"],
   })
 );
 app.use(express.json());
