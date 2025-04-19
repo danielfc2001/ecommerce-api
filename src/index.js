@@ -5,6 +5,7 @@ import multer from "multer";
 import authRoutes from "./routes/auth.routes.js";
 import productsRoutes from "./routes/products.routes.js";
 import connectDB from "./db/mongodb.js";
+import gProductsRoutes from "./routes/gProducts.routes.js";
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ const upload = multer({ storage });
 connectDB();
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/gproducts", gProductsRoutes);
 
 app.use("/api/products", upload.single("image"), productsRoutes);
 
