@@ -75,6 +75,36 @@ export const createProduct = async (req, res) => {
         errorStatus: 400,
         message: "Debe rellenar todos los campos de tipo obligatorio.",
       };
+
+    if (!product.image) {
+      const model = new productModel({
+        name: product.name,
+        description: product.description,
+        price: parseFloat(product.price),
+        currency: product.currency,
+        alterCurrency:
+          (product.currency === "USD") & (product.acceptCup === "true")
+            ? true
+            : false,
+        stock: parseFloat(product.stock),
+        category: product.category,
+        isOffer: product.isOffer === "true" ? true : false,
+        offerDiscount: product.offerDiscount
+          ? parseFloat(product.offerDiscount)
+          : 0,
+        createdBy: product.id,
+      });
+
+      const newProduct = await model.save();
+      if (!newProduct)
+        throw { message: "A ocurrido un error al crear el producto." };
+      console.log(model);
+      return res
+        .status(200)
+        .json({ message: "El producto a sido creado satisfactoriamente." });
+    }
+
+    // En caso de que exista la imagen entonces se procesara por la nube de cloudinary
     const uploadImgResult = await cloudImgUpload(product.image);
 
     console.log(uploadImgResult);
@@ -87,7 +117,7 @@ export const createProduct = async (req, res) => {
     const model = new productModel({
       name: product.name,
       description: product.description,
-      image: uploadImgResult.url,
+      image: uploadImgResult.secure_url,
       imageId: uploadImgResult.public_id,
       price: parseFloat(product.price),
       currency: product.currency,

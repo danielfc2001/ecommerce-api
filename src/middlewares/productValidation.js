@@ -1,7 +1,7 @@
 export const productValidation = (req, res, next) => {
   const product = {
     ...req.body,
-    image: req.file.buffer,
+    image: req.file?.buffer,
   };
   if (
     !product.name ||

@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
-// import { v4 as uuidv4 } from "uuid";
 import { createHash } from "crypto";
 
 export const cloudImgUpload = async (fileBuffer) => {
@@ -12,7 +11,7 @@ export const cloudImgUpload = async (fileBuffer) => {
     });
     // const uniquePublicId = `product_${uuidv4()}`;
 
-    const uniqueId = createHash("sha256", Date.now());
+    const uniqueId = createHash("sha256", `${Date.now()} ${Math.random()}`);
 
     // Wrap the upload in a Promise to handle the stream
     const result = await new Promise((resolve, reject) => {
