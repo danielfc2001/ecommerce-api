@@ -6,7 +6,7 @@ import {
 
 const router = Router();
 
-router.get("/offers", getGlobalOfferProducts);
 router.get("/", getGlobalProducts);
+router.get("/offers", getGlobalOfferProducts);
 
 export default router;
