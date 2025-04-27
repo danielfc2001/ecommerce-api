@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-/* import ScrapedValue from "../schemas/scrapedValueModel.js"; */
+import scrapedValueModel from "../schemas/scrapedValueModel.js";
 
 export const scrapeAndStoreValue = async () => {
   try {
@@ -11,37 +11,27 @@ export const scrapeAndStoreValue = async () => {
     const page = await browser.newPage();
 
     // Navega al sitio web
-    await page.goto("https://eltoque.com");
+    await page.goto("https://eltoque.com", { waitUntil: "networkidle2" });
 
-    // Espera a que el contenedor específico esté disponible en el DOM
-    await page.waitForSelector(".price-text"); // Cambia '.specific-container-class' por el selector real
-
-    // Extrae el texto del contenedor
-    const value = await page.$eval(".price-text", (el) => {
-      console.log(el);
-      el.textContent.trim();
+    const value = await page.evaluate(() => {
+      const querys = document.querySelectorAll("span.price-text");
+      const data = querys[1].textContent.slice(0, 3).trim();
+      return data;
     });
 
-    // Cierra el navegador
+    console.log(value);
+
     await browser.close();
 
-    console.log(value);
-    return;
-    /*     // Almacena el valor en la base de datos
-    const scrapedValue = new ScrapedValue({ value });
+    // Almacena el valor en la base de datos
+    if (!value) throw new Error("No se pudo extraer el valor del sitio web.");
+
+    const scrapedValue = new scrapedValueModel({ value });
     await scrapedValue.save();
-    
-    console.log("Valor almacenado con éxito:", scrapedValue); */
+
+    console.log("Valor almacenado con éxito:", scrapedValue);
+    return;
   } catch (error) {
     console.error("Error al realizar el scraping:", error.message);
   }
 };
-
-scrapeAndStoreValue();
-
-// Función para extraer el valor del HTML (ajusta según el sitio web)
-/* const extractValueFromHTML = (html) => {
-  // Implementa la lógica para extraer el valor del HTML
-  // Por ejemplo, puedes usar expresiones regulares o una librería como cheerio
-  return "valor-ejemplo"; // Reemplaza con el valor extraído
-}; */

@@ -5,4 +5,6 @@ const scrapedValueSchema = new mongoose.Schema({
   date: { type: Date, required: true, default: Date.now },
 });
 
-export default mongoose.model("ScrapedValue", scrapedValueSchema);
+const scrapedValueModel = mongoose.model("ScrapedValue", scrapedValueSchema);
+
+export default scrapedValueModel;
