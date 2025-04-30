@@ -1,8 +1,7 @@
 import productModel from "../schemas/productModel.js";
 
 export const getGlobalProducts = async (req, res) => {
-  const { page } = req.query;
-  console.log(page);
+  const { page, category } = req.query;
   try {
     if (!page)
       throw {
@@ -10,7 +9,7 @@ export const getGlobalProducts = async (req, res) => {
         message: "Debe enviar el numero de pagina para procesar la solicitud.",
       };
     const products = await productModel
-      .find({})
+      .find(category === "all" ? {} : { category })
       .limit(10)
       .skip((page - 1) * 10);
     if (!products)
@@ -18,9 +17,11 @@ export const getGlobalProducts = async (req, res) => {
         errorStatus: 404,
         message: "No se han encontrado productos que mostrar.",
       };
-    const totalProducts = await productModel.countDocuments({});
+    const totalProducts = await productModel.countDocuments(
+      category === "all" ? {} : { category }
+    );
     const totalPages = Math.ceil(totalProducts / 10);
-    res.status(200).json({
+    const result = {
       products,
       totalProducts,
       totalPages,
@@ -30,6 +31,13 @@ export const getGlobalProducts = async (req, res) => {
       nextPage: page < totalPages ? parseInt(page) + 1 : null,
       prevPage: page > 1 ? parseInt(page) - 1 : null,
       isLastPage: page >= totalPages,
+      activeFilters: {
+        category,
+      },
+    };
+    console.log(result);
+    res.status(200).json({
+      ...result,
     });
   } catch (error) {
     console.log(error);
@@ -42,8 +50,14 @@ export const getGlobalProducts = async (req, res) => {
 };
 
 export const getGlobalOfferProducts = async (req, res) => {
+  const { category } = req.query;
   try {
-    const products = await productModel.find({ isOffer: true });
+    const products = await productModel
+      .find(
+        category === "all" ? { isOffer: true } : { isOffer: true, category }
+      )
+      .sort({ field: "desc" })
+      .limit(12);
     if (!products)
       throw {
         errorStatus: 404,
