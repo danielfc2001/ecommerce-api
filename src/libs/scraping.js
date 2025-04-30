@@ -30,7 +30,7 @@ export const scrapeAndStoreValue = async () => {
     await scrapedValue.save();
 
     console.log("Valor almacenado con éxito:", scrapedValue);
-    return;
+    return value;
   } catch (error) {
     console.error("Error al realizar el scraping:", error.message);
   }

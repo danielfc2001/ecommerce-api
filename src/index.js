@@ -40,10 +40,10 @@ app.get("/", (req, res) => {
 });
 
 // Programa la tarea para ejecutarse todos los días a las 3:00 AM
-cron.schedule("0 8 * * *", async () => {
+/* cron.schedule("0 8 * * *", async () => {
   console.log("Ejecutando tarea programada: Web Scraping");
   await scrapeAndStoreValue();
-});
+}); */
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server running on port: ${process.env.PORT || 3000}`);
