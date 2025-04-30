@@ -9,5 +9,6 @@ module.exports = {
   firefox: {
     skipDownload: true,
   },
-  cacheDirectory: join(__dirname, "node_modules", ".cache", "puppeteer"),
+  cacheDirectory:
+    /* join(__dirname, "node_modules", ".cache", "puppeteer") */ "/opt/render/project/src/node_modules/.cache/puppeteer",
 };
